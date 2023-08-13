@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { useState } from "react";
 
 function Game() {
@@ -9,6 +9,8 @@ function Game() {
     ]);
     const [isXTurn, setIsXTurn] = useState<boolean>(true);
     const [gameOver, setGameOver] = useState<boolean>(false);
+    const [xWins, setXWins] = useState<number>(0);
+    const [oWins, setOWins] = useState<number>(0);
 
     const checkGameOver = () => {
         // Check for a win or a draw
@@ -67,6 +69,8 @@ function Game() {
                         ["", "", ""],
                         ["", "", ""]
                     ]);
+                    if (isXTurn) setXWins(xWins + 1);
+                    else setOWins(oWins + 1);
                     setGameOver(false);
                 }, 1500); // Clear the board and restart after 1.5 seconds
             } else
@@ -75,22 +79,30 @@ function Game() {
     };
 
     return (
-        <table style={{
-            margin: "0",
-        }}>
-            {board.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                    {row.map((cellValue, colIndex) => (
-                        <td key={colIndex}>
-                            <Cell
-                                value={cellValue}
-                                onClick={() => handleCellClick(rowIndex, colIndex)}
-                            />
-                        </td>
-                    ))}
-                </tr>
-            ))}
-        </table>
+        <Grid container spacing={1} display="flex" alignItems="center" justifyContent="center">
+            <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
+                <h1>X: {xWins} | O: {oWins}</h1>
+            </Grid>
+            <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
+                <h1>{gameOver ? isXTurn ? "X won" : "O won" : `It is ${isXTurn ? "X" : "O"}'s turn!`}</h1>
+            </Grid>
+            <table style={{
+                margin: "0",
+            }}>
+                {board.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                        {row.map((cellValue, colIndex) => (
+                            <td key={colIndex}>
+                                <Cell
+                                    value={cellValue}
+                                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                                />
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </table>
+        </Grid>
     );
 }
 
