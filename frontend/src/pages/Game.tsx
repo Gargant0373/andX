@@ -1,74 +1,122 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import ErrorHandler from "./ErrorHandler";
-import { Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import { useState } from "react";
 
 function Game() {
-    const location = useLocation();
-    const nav = useNavigate();
+    const [board, setBoard] = useState<string[][]>([
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
+    ]);
+    const [isXTurn, setIsXTurn] = useState<boolean>(true);
+    const [gameOver, setGameOver] = useState<boolean>(false);
 
-    if (!location.state) {
-        nav("/");
-        return <ErrorHandler message="No name provided" />
-    }
+    const checkGameOver = () => {
+        // Check for a win or a draw
+        for (let row = 0; row < 3; row++) {
+            if (
+                board[row][0] !== "" &&
+                board[row][0] === board[row][1] &&
+                board[row][1] === board[row][2]
+            )
+                return true; // Row win
+        }
+
+        for (let col = 0; col < 3; col++) {
+            if (
+                board[0][col] !== "" &&
+                board[0][col] === board[1][col] &&
+                board[1][col] === board[2][col]
+            )
+                return true; // Column win
+        }
+
+        if (
+            board[0][0] !== "" &&
+            board[0][0] === board[1][1] &&
+            board[1][1] === board[2][2]
+        )
+            return true; // Diagonal win (top-left to bottom-right)
+
+        if (
+            board[0][2] !== "" &&
+            board[0][2] === board[1][1] &&
+            board[1][1] === board[2][0]
+        )
+            return true; // Diagonal win (top-right to bottom-left)
+
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++)
+                if (board[row][col] === "")
+                    return false; // Game not over yet
+        }
+
+        return true; // Draw
+    };
+
+    const handleCellClick = (rowIndex: number, colIndex: number) => {
+        if (!gameOver && board[rowIndex][colIndex] === "") {
+            const newBoard = [...board];
+            newBoard[rowIndex][colIndex] = isXTurn ? "X" : "O";
+            setBoard(newBoard);
+
+            if (checkGameOver()) {
+                setGameOver(true);
+                setTimeout(() => {
+                    setBoard([
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                    ]);
+                    setGameOver(false);
+                }, 1500); // Clear the board and restart after 1.5 seconds
+            } else
+                setIsXTurn(!isXTurn);
+        }
+    };
 
     return (
-        <Grid container spacing={3} xs={12}>
-            <Grid item xs={8} md={3}>
-                <Data name={location.state.name} />
-            </Grid>
-            <Grid item xs={4}>
-                <Options />
-            </Grid>
-        </Grid>
-    )
+        <table style={{
+            margin: "0",
+        }}>
+            {board.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                    {row.map((cellValue, colIndex) => (
+                        <td key={colIndex}>
+                            <Cell
+                                value={cellValue}
+                                onClick={() => handleCellClick(rowIndex, colIndex)}
+                            />
+                        </td>
+                    ))}
+                </tr>
+            ))}
+        </table>
+    );
 }
 
-function Data(props: { name: string }) {
-    return (
-        <Grid container xs={12}>
-            <Grid item xs={12}>
-                <Typography variant="h5">Your Stats</Typography>
-            </Grid>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>{props.name}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Wins</TableCell>
-                            <TableCell>0</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Losses</TableCell>
-                            <TableCell>0</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Draws</TableCell>
-                            <TableCell>0</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Grid>
-    )
-}
+type CellProps = {
+    value: string;
+    onClick: () => void;
+};
 
-function Options() {
+function Cell({ value, onClick }: CellProps) {
     return (
-        <Grid container spacing={3} xs={12}>
-            <Grid item xs={4}>
-                <Button variant="contained">Play Local</Button>
-            </Grid>
-            <Grid item xs={4}>
-                <Button variant="contained">Multiplayer</Button>
-            </Grid>
-            <Grid item xs={4}>
-                <Button variant="contained">Play Bot</Button>
-            </Grid>
-        </Grid>
-    )
+        <Box
+            sx={{
+                border: 1,
+                borderColor: "black",
+                height: "100px",
+                width: "100px"
+            }}
+            margin="0"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            onClick={onClick}
+        >
+            {value}
+        </Box>
+    );
 }
 
 export default Game;

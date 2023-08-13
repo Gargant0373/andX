@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Homepage from './pages/Homepage';
 import Game from './pages/Game';
+import Join from './pages/Join';
 
 const router = createBrowserRouter([
   {
@@ -14,12 +15,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/join",
+    element: <Join />,
+  },
+  {
+    path: "/game",
     element: <Game />,
-  }
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <RouterProvider router={router} />
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

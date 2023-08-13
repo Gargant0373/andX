@@ -1,13 +1,19 @@
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-function ErrorHandler(props: {message: string}) {
+function ErrorHandler(props: { message: string }) {
+    let nav = useNavigate();
+    
     return (
-        <Grid container spacing={2} marginTop="50px" display="flex" justifyContent="center" >
-            <Grid item xs={12}>
-                <Typography variant="h1">Error</Typography>
+        <Grid container spacing={2} marginTop="50px">
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                <Typography variant="h3" color="red">Oopsie!</Typography>
             </Grid>
-            <Grid item xs={12}>
-                <Typography variant="h3">{props.message}</Typography>
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                <Typography variant="h5">{props.message}</Typography>
+            </Grid>
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                <Button variant="contained" color="error" onClick={() => nav(".")}>Go Back!</Button>
             </Grid>
         </Grid >
     )
